@@ -1,0 +1,114 @@
+import { BadgeCheck, X } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
+
+const StoryViewer = ({ viewStory, setViewStory }) => {
+  const [progress, setProgress] = useState(0)
+
+  useEffect(() => {
+    let progressInterval
+
+    if (viewStory && viewStory.media_type !== 'video') {
+      setProgress(0)
+
+      const duration = 5000 // 5 seconds
+      const step = 100      // update every 100ms
+      let elapsed = 0
+
+      progressInterval = setInterval(() => {
+        elapsed += step
+        const percent = (elapsed / duration) * 100
+        setProgress(percent)
+
+        if (percent >= 100) {
+          clearInterval(progressInterval)
+          setViewStory(null) // auto close when finished
+        }
+      }, step)
+    }
+
+    return () => clearInterval(progressInterval)
+  }, [viewStory, setViewStory])
+
+  const handleClose = () => {
+    setViewStory(null)
+  }
+
+  const renderContent = () => {
+    switch (viewStory?.media_type) {
+      case 'image':
+        return (
+          <img
+            src={viewStory.media_url}
+            alt=""
+            className="max-w-full max-h-screen object-contain"
+          />
+        )
+      case 'video':
+        return (
+          <video
+            src={viewStory.media_url}
+            className="max-h-screen"
+            controls
+            autoPlay
+            onEnded={handleClose}
+          />
+        )
+      case 'text':
+        return (
+          <div className="w-full h-full flex items-center justify-center p-8 text-white text-2xl text-center">
+            {viewStory.content}
+          </div>
+        )
+      default:
+        return null
+    }
+  }
+
+  if (!viewStory) return null
+
+  return (
+    <div
+      className="fixed inset-0 h-screen bg-black bg-opacity-90 z-110 flex items-center justify-center"
+      style={{
+        backgroundColor:
+          viewStory.media_type === 'text'
+            ? viewStory.background
+            : '#000000',
+      }}
+    >
+      {/* Progress bar */}
+      <div className="absolute top-0 left-0 w-full h-1 bg-gray-700">
+        <div
+          className="h-full bg-white transition-all duration-100 linear"
+          style={{ width: `${progress}%` }}
+        ></div>
+      </div>
+
+      {/* User info top left */}
+      <div className="absolute top-4 left-4 flex items-center gap-2">
+        <img
+          src={viewStory.user?.profile_picture}
+          alt=""
+          className="w-10 h-10 rounded-full"
+        />
+        <div className="flex items-center gap-1 text-white">
+          <span>{viewStory.user?.full_name}</span>
+          <BadgeCheck size={18} />
+        </div>
+      </div>
+
+      {/* Close button */}
+      <button
+        onClick={handleClose}
+        className="absolute top-4 right-4 text-white text-3xl font-bold focus:outline-none"
+      >
+        <X className="w-8 h-8 hover:scale-110 transition cursor-pointer" />
+      </button>
+
+      {/* Story content */}
+      {renderContent()}
+    </div>
+  )
+}
+
+export default StoryViewer
