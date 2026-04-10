@@ -3,6 +3,7 @@ import moment from "moment";
 import React from "react";
 import Avatar from "react-avatar";
 
+
 const UserProfileInfo = ({ user, posts, profileId, setShowEdits }) => {
   return (
     <div className="relative py-4 px-6 md:px-8 bg-white">

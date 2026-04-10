@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Users, UserCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../AuthContext";
+import { API_BASE } from "../helper";
 
 const Connections = () => {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ const Connections = () => {
   const fetchFollowers = async () => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/users/${currentUser._id}/followers`
+        `${API_BASE}/api/users/${currentUser._id}/followers`
       );
       if (!res.ok) return console.error("Followers API error");
       const data = await res.json();
@@ -30,7 +31,7 @@ const Connections = () => {
   const fetchFollowing = async () => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/users/${currentUser._id}/following`
+        `${API_BASE}/api/users/${currentUser._id}/following`
       );
       if (!res.ok) return console.error("Following API error");
       const data = await res.json();
@@ -44,7 +45,7 @@ const Connections = () => {
   const fetchCounts = async () => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/users/${currentUser._id}/follow-count`
+        `${API_BASE}/api/users/${currentUser._id}/follow-count`
       );
       if (!res.ok) return console.error("Count API error");
       const data = await res.json();

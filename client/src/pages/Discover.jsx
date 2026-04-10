@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Search } from 'lucide-react'
+import { API_BASE } from '../helper';
 
 const Discover = () => {
  const { currentUser } = useAuth();
@@ -12,13 +13,13 @@ const Discover = () => {
 const navigate = useNavigate();
 
   const handleSearch = async () => {
-    const res = await fetch(`http://localhost:5000/api/users/search?query=${search}`);
+    const res = await fetch(`${API_BASE}/api/users/search?query=${search}`);
     const data = await res.json();
     setUsers(data);
   };
 
    const handleFollow = async (userId) => {
-    await fetch(`http://localhost:5000/api/users/${userId}/follow`, {
+    await fetch(`${API_BASE}/api/users/${userId}/follow`, {
       method: "POST",
       body: JSON.stringify({ followerId: currentUser._id }),
       headers: { "Content-Type": "application/json" }
@@ -28,7 +29,7 @@ const navigate = useNavigate();
 
    useEffect(() => {
     const fetchUsers = async () => {
-      const res = await fetch(`http://localhost:5000/api/users/discover/${currentUser._id}`);
+      const res = await fetch(`${API_BASE}/api/users/discover/${currentUser._id}`);
       const data = await res.json();
       setUsers(data);
     };

@@ -3,6 +3,7 @@ import { BadgeCheck, Heart, MessageCircle } from "lucide-react";
 import moment from "moment";
 import Avatar from "react-avatar";
 import { useAuth } from "../AuthContext";
+import { API_BASE } from '../helper';
 
 const PostCard = ({ post, feeds, setFeeds, user }) => {
   const { currentUser, setCurrentUser } = useAuth();
@@ -27,14 +28,14 @@ const PostCard = ({ post, feeds, setFeeds, user }) => {
 
   const getProfilePicture = (post) => {
     if (post.userId?.profile_picture)
-      return `http://localhost:5000${post.userId.profile_picture}`;
+      return `${API_BASE}${post.userId.profile_picture}`;
     return null; // fallback to Avatar
   };
 
   const getImageUrl = (imgPath) => {
     if (!imgPath) return null;
     if (imgPath.startsWith("http")) return imgPath;
-    return `http://localhost:5000${imgPath}`;
+    return `${API_BASE}${imgPath}`;
   };
 
   // ---------------- Like handler ----------------
@@ -44,7 +45,7 @@ const PostCard = ({ post, feeds, setFeeds, user }) => {
       if (!localUser?._id) return;
 
       const res = await fetch(
-        `http://localhost:5000/api/posts/${postId}/like`,
+        `${API_BASE}/api/posts/${postId}/like`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -69,7 +70,7 @@ const PostCard = ({ post, feeds, setFeeds, user }) => {
 
   try {
     const res = await fetch(
-      `http://localhost:5000/api/posts/${post._id}/comment`,
+      `${API_BASE}/api/posts/${post._id}/comment`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -99,7 +100,7 @@ const handleFollow = async (targetUserId) => {
 
   try {
     const res = await fetch(
-      `http://localhost:5000/api/users/${targetUserId}/follow`,
+      `${API_BASE}/api/users/${targetUserId}/follow`,
       {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -124,7 +125,7 @@ useEffect(() => {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/users/${currentUser._id}/following`
+        `${API_BASE}/api/users/${currentUser._id}/following`
       );
       const data = await res.json();
 

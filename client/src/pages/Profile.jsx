@@ -5,6 +5,7 @@ import PostCard from "../components/PostCard";
 import Loading from "../components/Loading";
 import ProfileModal from "../components/ProfileModal";
 import { useAuth } from "../AuthContext";
+import { API_BASE } from '../helper';
 
 const Profile = () => {
   const { profileId } = useParams();   // param name from Route
@@ -14,6 +15,7 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState("posts");
   const [showModal, setShowModal] = useState(false);
   const [user, setUser] = useState(null);
+  
 
   // Fetch user info
   useEffect(() => {
@@ -21,7 +23,7 @@ const Profile = () => {
       try {
         if (profileId) {
           // viewing someone else
-          const res = await fetch(`http://localhost:5000/api/users/${profileId}`);
+          const res = await fetch(`${API_BASE}/api/users/${profileId}`);
           const data = await res.json();
           if (res.ok) setUser(data);
           else setUser(null);
@@ -44,7 +46,7 @@ const Profile = () => {
         const idToFetch = profileId || currentUser?._id;
         if (!idToFetch) return;
 
-        const res = await fetch(`http://localhost:5000/api/posts/user/${idToFetch}`);
+        const res = await fetch(`${API_BASE}/api/posts/user/${idToFetch}`);
         const data = await res.json();
         setPosts(Array.isArray(data) ? data : []);
       } catch (err) {

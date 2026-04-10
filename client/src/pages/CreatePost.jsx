@@ -3,6 +3,7 @@ import { dummyUserData } from "../assets/assets";
 import { X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { API_BASE } from '../helper';
 import Avatar from "react-avatar";
 const CreatePost = ({ user }) => {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ const CreatePost = ({ user }) => {
       // append multiple images if available
       images.forEach((img) => formData.append("images", img));
 
-      const res = await fetch("http://localhost:5000/api/posts/create-post", {
+      const res = await fetch(`${API_BASE}/api/posts/create-post`, {
         method: "POST",
         body: formData,
       });

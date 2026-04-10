@@ -3,6 +3,8 @@ import Loading from "../components/Loading";
 import StoriesBar from "../components/StoriesBar";
 import PostCard from "../components/PostCard"; 
 import Sponsored from "../assets/sponsored_img.png";
+import { useAuth } from "../AuthContext";
+import { API_BASE } from '../helper';
 
 const Feed = ({ user }) => {
   const [feeds, setFeeds] = useState([]);
@@ -11,7 +13,7 @@ const Feed = ({ user }) => {
   // ✅ Fetch posts (GET request)
   const fetchPosts = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/posts"); // ✅ correct API
+      const res = await fetch(`${API_BASE}/api/posts`); // ✅ correct API
       const data = await res.json();
 
       setFeeds(data);
