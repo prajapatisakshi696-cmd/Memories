@@ -31,7 +31,6 @@ app.use(cors({
 
 // Middleware
 app.use(express.json());
-app.use(cors({ origin: "http://localhost:5173" }));
 
 // Static folder (IMPORTANT)
 app.use("/uploads", express.static("uploads"));
