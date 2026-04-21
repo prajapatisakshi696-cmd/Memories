@@ -12,10 +12,18 @@ dotenv.config();
 const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://memories-xlaf-git-main-prajapatisakshi696-3250s-projects.vercel.app"
+  "https://memories-xlaf.vercel.app", // production domain
+  "https://memories-xlaf-git-main-prajapatisakshi696-3250s-projects.vercel.app" // preview domain
 ];
+
 app.use(cors({
-  origin: allowedOrigins,
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
