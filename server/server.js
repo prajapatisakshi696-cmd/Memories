@@ -10,6 +10,7 @@ import followRoutes from "./routes/follow.js";
 
 dotenv.config();
 const app = express();
+
 const allowedOrigins = [
   "http://localhost:5173",
   "https://memories-xlaf.vercel.app", // production domain
@@ -28,21 +29,19 @@ app.use(cors({
   credentials: true
 }));
 
-
 // Middleware
 app.use(express.json());
 
-// Static folder (IMPORTANT)
+// Static folder
 app.use("/uploads", express.static("uploads"));
 
 // Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/posts", postsRoutes); // better naming
-app.use("/api/users", usersRoutes); 
+app.use("/api/posts", postsRoutes);
+app.use("/api/users", usersRoutes);
 app.use("/api/follow", followRoutes);
 
-
-// Test route (optional but useful)
+// Test route
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
@@ -52,7 +51,6 @@ mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("✅ MongoDB Connected");
-
     app.listen(5000, () => {
       console.log("🚀 Server running on port 5000");
     });
