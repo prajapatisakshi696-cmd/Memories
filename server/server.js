@@ -13,8 +13,8 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://memories-13ld.vercel.app/", // another domain
-  "https://memories-13ld-git-main-prajapatisakshi696-3250s-projects.vercel.app/", // another domain
+  "https://memories-13ld.vercel.app", // another domain
+  "https://memories-13ld-git-main-prajapatisakshi696-3250s-projects.vercel.app", // another domain
 ];
 
 app.use(cors({
