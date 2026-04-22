@@ -2,6 +2,7 @@ import { PenBox, Verified, MapPin, Calendar, BadgeCheck } from "lucide-react";
 import moment from "moment";
 import React from "react";
 import Avatar from "react-avatar";
+import { UPLOADS_BASE} from "../helper";
 
 
 const UserProfileInfo = ({ user, posts, profileId, setShowEdits }) => {
@@ -12,7 +13,7 @@ const UserProfileInfo = ({ user, posts, profileId, setShowEdits }) => {
         <div className="w-32 h-32 border-4 border-white shadow-lg absolute -top-16 rounded-full overflow-hidden">
           {user?.profile_picture ? (
             <img
-              src={`http://localhost:5000${user.profile_picture}`}
+              src={`${UPLOADS_BASE}${user.profile_picture.replace("uploads/","")}`}
               alt={user?.username}
               className="w-32 h-32 rounded-full object-cover"
             />

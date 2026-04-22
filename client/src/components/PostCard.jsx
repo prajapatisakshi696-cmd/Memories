@@ -3,7 +3,7 @@ import { BadgeCheck, Heart, MessageCircle } from "lucide-react";
 import moment from "moment";
 import Avatar from "react-avatar";
 import { useAuth } from "../AuthContext";
-import { API_BASE } from '../helper';
+import { API_BASE, UPLOADS_BASE} from '../helper';
 
 const PostCard = ({ post, feeds, setFeeds, user }) => {
   const { currentUser, setCurrentUser } = useAuth();
@@ -152,7 +152,7 @@ useEffect(() => {
     <div className="flex items-center gap-3 cursor-pointer">
       {post.userId?.profile_picture ? (
         <img
-          src={`http://localhost:5000${post.userId.profile_picture}`}
+          src={`${UPLOADS_BASE}${post.userId.profile_picture.replace("uploads/","")}`}
           alt={post.userId?.username || post.creator || "User"}
           className="w-12 h-12 rounded-full object-cover"
         />
@@ -199,7 +199,7 @@ useEffect(() => {
           {post.images.map((img, index) => (
             <img
               key={index}
-              src={`http://localhost:5000${img}`}
+              src={`${UPLOADS_BASE}${img.replace("uploads/","")}`}
               alt="post"
               className="w-full rounded-md"
             />
