@@ -14,7 +14,11 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
   "https://memories-xlaf.vercel.app", // production domain
-  "https://memories-xlaf-git-main-prajapatisakshi696-3250s-projects.vercel.app" // preview domain
+  "https://memories-xlaf-git-main-prajapatisakshi696-3250s-projects.vercel.app", // preview domain
+  "https://memories-13ld.vercel.app/", // another domain
+  "https://memories-13ld-git-main-prajapatisakshi696-3250s-projects.vercel.app/", // another domain
+  "https://memories-dkqn-amber.vercel.app/", // another domain
+  "https://memories-dkqn-git-main-prajapatisakshi696-3250s-projects.vercel.app/" // another domain
 ];
 
 app.use(cors({
