@@ -3,7 +3,7 @@ import moment from "moment";
 import React from "react";
 import { useState, useEffect } from "react";
 import Avatar from "react-avatar";
-import { getImageUrl, UPLOADS_BASE } from "../helper";
+import { getImageUrl } from "../helper";
 
 const UserProfileInfo = ({ user, posts, profileId, setShowEdits }) => {
   const [counts, setCounts] = useState({ followers: 0, following: 0 });
