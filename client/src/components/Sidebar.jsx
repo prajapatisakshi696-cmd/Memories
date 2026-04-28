@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import MenuItems from "../components/MenuItems";
 import { CirclePlus, LogOut } from "lucide-react";
 import Avatar from "react-avatar"; 
-import { UPLOADS_BASE } from "../helper";
+import { getImageUrl } from "../helper";
 
 const Sidebar = ({ sidebarOpen: isOpen, setSidebarOpen, user, onLogout }) => {
   const navigate = useNavigate();
@@ -46,7 +46,7 @@ const Sidebar = ({ sidebarOpen: isOpen, setSidebarOpen, user, onLogout }) => {
           <div className="w-10 h-10 rounded-full overflow-hidden">
             {user?.profile_picture ? (
               <img
-                src={`${UPLOADS_BASE}${user.profile_picture.replace("uploads/","")}`}
+                src={getImageUrl(user.profile_picture)}
                 alt={user?.username}
                 className="w-full h-full object-cover"
               />

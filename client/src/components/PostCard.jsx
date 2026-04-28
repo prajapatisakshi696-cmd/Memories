@@ -3,7 +3,7 @@ import { BadgeCheck, Heart, MessageCircle } from "lucide-react";
 import moment from "moment";
 import Avatar from "react-avatar";
 import { useAuth } from "../AuthContext";
-import { API_BASE, UPLOADS_BASE} from '../helper';
+import { API_BASE, getImageUrl } from "../helper";
 
 const PostCard = ({ post, feeds, setFeeds, user }) => {
   const { currentUser, setCurrentUser } = useAuth();
@@ -28,14 +28,8 @@ const PostCard = ({ post, feeds, setFeeds, user }) => {
 
   const getProfilePicture = (post) => {
     if (post.userId?.profile_picture)
-      return `${API_BASE}${post.userId.profile_picture}`;
+      return getImageUrl(post.userId.profile_picture);
     return null; // fallback to Avatar
-  };
-
-  const getImageUrl = (imgPath) => {
-    if (!imgPath) return null;
-    if (imgPath.startsWith("http")) return imgPath;
-    return `${API_BASE}${imgPath}`;
   };
 
   // ---------------- Like handler ----------------
@@ -44,20 +38,16 @@ const PostCard = ({ post, feeds, setFeeds, user }) => {
       const localUser = JSON.parse(localStorage.getItem("currentUser"));
       if (!localUser?._id) return;
 
-      const res = await fetch(
-        `${API_BASE}/api/posts/${postId}/like`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId: localUser._id }),
-        },
-      );
+      const res = await fetch(`${API_BASE}/api/posts/${postId}/like`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: localUser._id }),
+      });
 
       const updatedPost = await res.json();
 
-      // ✅ Update frontend state
       setFeeds((prevFeeds) =>
-        prevFeeds.map((p) => (p._id === updatedPost._id ? updatedPost : p)),
+        prevFeeds.map((p) => (p._id === updatedPost._id ? updatedPost : p))
       );
     } catch (err) {
       console.error("Like error:", err);
@@ -65,141 +55,130 @@ const PostCard = ({ post, feeds, setFeeds, user }) => {
   };
 
   // ---------------- Comment handler ----------------
- const handleComment = async () => {
-  if (!comment.trim() || !currentUser?._id) return;
+  const handleComment = async () => {
+    if (!comment.trim() || !currentUser?._id) return;
 
-  try {
-    const res = await fetch(
-      `${API_BASE}/api/posts/${post._id}/comment`,
-      {
+    try {
+      const res = await fetch(`${API_BASE}/api/posts/${post._id}/comment`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           user: currentUser.full_name || currentUser.username,
           text: comment,
         }),
-      }
-    );
+      });
 
-    const updatedPost = await res.json();
+      const updatedPost = await res.json();
 
-    setFeeds((prevFeeds) =>
-      prevFeeds.map((p) =>
-        p._id === updatedPost._id ? updatedPost : p
-      )
-    );
-
-    setComment("");
-  } catch (err) {
-    console.error(err);
-  }
-};
-// ---------------- Follow handler ----------------
-const handleFollow = async (targetUserId) => {
-  if (!currentUser?._id) return alert("Login required");
-
-  try {
-    const res = await fetch(
-      `${API_BASE}/api/users/${targetUserId}/follow`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: currentUser._id }),
-      }
-    );
-
-    const data = await res.json();
-    console.log("Response:", data);
-
-    // Toggle local state
-    setIsFollowing((prev) => !prev);
-  } catch (err) {
-    console.error("Follow error:", err);
-  }
-};
-
-// ---------------- Check follow status ----------------
-useEffect(() => {
-  const checkFollow = async () => {
-    if (!currentUser?._id || !post.userId?._id) return;
-
-    try {
-      const res = await fetch(
-        `${API_BASE}/api/users/${currentUser._id}/following`
-      );
-      const data = await res.json();
-
-      // Backend returns array of user objects
-      const alreadyFollowing = data.some(
-        (user) => user._id === post.userId._id
+      setFeeds((prevFeeds) =>
+        prevFeeds.map((p) => (p._id === updatedPost._id ? updatedPost : p))
       );
 
-      setIsFollowing(alreadyFollowing);
+      setComment("");
     } catch (err) {
       console.error(err);
     }
   };
 
-  checkFollow();
-}, [currentUser, post.userId]);
+  // ---------------- Follow handler ----------------
+  const handleFollow = async (targetUserId) => {
+    if (!currentUser?._id) return alert("Login required");
+
+    try {
+      const res = await fetch(`${API_BASE}/api/users/${targetUserId}/follow`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: currentUser._id }),
+      });
+
+      const data = await res.json();
+      console.log("Response:", data);
+
+      setIsFollowing((prev) => !prev);
+    } catch (err) {
+      console.error("Follow error:", err);
+    }
+  };
+
+  // ---------------- Check follow status ----------------
+  useEffect(() => {
+    const checkFollow = async () => {
+      if (!currentUser?._id || !post.userId?._id) return;
+
+      try {
+        const res = await fetch(
+          `${API_BASE}/api/users/${currentUser._id}/following`
+        );
+        const data = await res.json();
+
+        const alreadyFollowing = data.some(
+          (user) => user._id === post.userId._id
+        );
+
+        setIsFollowing(alreadyFollowing);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    checkFollow();
+  }, [currentUser, post.userId]);
+
   return (
     <div className="bg-white rounded-xl shadow p-4 space-y-4 w-full max-w-2xl">
+      {/* TOP ROW (User Info + Follow Button) */}
+      <div className="flex items-start justify-between">
+        {/* LEFT SIDE */}
+        <div className="flex items-center gap-3 cursor-pointer">
+          {post.userId?.profile_picture ? (
+            <img
+              src={getImageUrl(post.userId.profile_picture)}
+              alt={post.userId?.username || post.creator || "User"}
+              className="w-12 h-12 rounded-full object-cover"
+            />
+          ) : (
+            <Avatar
+              name={post.userId?.full_name || post.creator || "User"}
+              size="48"
+              round
+            />
+          )}
 
-  {/* TOP ROW (User Info + Follow Button) */}
-  <div className="flex items-start justify-between">
+          <div>
+            <div className="flex items-center space-x-1">
+              <span className="font-semibold">
+                {post.userId?.username || post.creator || "Nobody"}
+              </span>
+              <BadgeCheck className="w-4 h-4 text-blue-500" />
+            </div>
 
-    {/* LEFT SIDE */}
-    <div className="flex items-center gap-3 cursor-pointer">
-      {post.userId?.profile_picture ? (
-        <img
-          src={`${UPLOADS_BASE}${post.userId.profile_picture.replace("uploads/","")}`}
-          alt={post.userId?.username || post.creator || "User"}
-          className="w-12 h-12 rounded-full object-cover"
-        />
-      ) : (
-        <Avatar
-          name={post.userId?.full_name || post.creator || "User"}
-          size="48"
-          round
-        />
-      )}
-
-      <div>
-        <div className="flex items-center space-x-1">
-          <span className="font-semibold">
-            {post.userId?.username || post.creator || "Nobody"}
-          </span>
-          <BadgeCheck className="w-4 h-4 text-blue-500"  
-          />
+            <div className="text-gray-500 text-sm">
+              {moment(post.createdAt).fromNow()}
+            </div>
+          </div>
         </div>
 
-        <div className="text-gray-500 text-sm">
-          {moment(post.createdAt).fromNow()}
-        </div>
+        {/* RIGHT SIDE (Follow Button) */}
+        <button
+          onClick={() => handleFollow(post.userId?._id)}
+          className="px-3 py-1 bg-blue-500 text-white rounded h-fit"
+        >
+          {isFollowing ? "Unfollow" : "Follow"}
+        </button>
       </div>
-    </div>
-
-    {/* RIGHT SIDE (Follow Button) */}
-   <button
-  onClick={() => handleFollow(post.userId?._id)}
-  className="px-3 py-1 bg-blue-500 text-white rounded h-fit"
->
-  {isFollowing ? "Unfollow" : "Follow"}
-</button>
-
-  </div>
 
       {/* Post Content */}
       <div className="text-gray-800 text-sm whitespace-pre-line">
         <p className="font-semibold">{post.title}</p>
       </div>
-      {/* post image */}
+
+      {/* Post images */}
       {post.images && post.images.length > 0 && (
         <div className="mt-3 space-y-2">
           {post.images.map((img, index) => (
             <img
               key={index}
-              src={`${UPLOADS_BASE}${img.replace("uploads/","")}`}
+              src={getImageUrl(img)}
               alt="post"
               className="w-full rounded-md"
             />
@@ -215,7 +194,7 @@ useEffect(() => {
             className={`w-4 h-4 cursor-pointer ${
               currentUser &&
               post.likes?.some(
-                (id) => id.toString() === currentUser._id.toString(),
+                (id) => id.toString() === currentUser._id.toString()
               )
                 ? "text-red-500 fill-red-500"
                 : ""
@@ -224,48 +203,46 @@ useEffect(() => {
           />
           <span>{post.likes?.length || 0}</span>
         </div>
-       {/* Comment input */}
-<div className="flex items-center gap-2">
-  <MessageCircle className="w-4 h-4 text-gray-600" />
 
-  <input
-    value={comment}
-    onChange={(e) => setComment(e.target.value)}
-    placeholder="Write a comment..."
-    className="border p-1 rounded flex-1"
-  />
+        {/* Comment input */}
+        <div className="flex items-center gap-2">
+          <MessageCircle className="w-4 h-4 text-gray-600" />
+          <input
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder="Write a comment..."
+            className="border p-1 rounded flex-1"
+          />
+          <button
+            onClick={handleComment}
+            className="bg-blue-500 text-white px-3 py-1 rounded"
+          >
+            Comment
+          </button>
+        </div>
 
-  {/* Comment Button (ONLY for adding comment) */}
-  <button
-    onClick={handleComment}
-    className="bg-blue-500 text-white px-3 py-1 rounded"
-  >
-    Comment
-  </button>
-</div>
+        {/* Show Comments */}
+        {post.comments
+          ?.slice(0, showAllComments ? post.comments.length : 1)
+          .map((c, index) => (
+            <p key={index}>
+              <span className="font-semibold">{c.user}</span> {c.text}
+            </p>
+          ))}
 
-{/* Show Comments */}
-{post.comments
-  ?.slice(0, showAllComments ? post.comments.length : 1)
-  .map((c, index) => (
-    <p key={index}>
-      <span className="font-semibold">{c.user}</span> {c.text}
-    </p>
-  ))}
-
-{/* See More Button */}
-{post.comments?.length > 1 && (
-  <div className="flex justify-end">
-    <button
-      onClick={() => setShowAllComments(!showAllComments)}
-      className="text-blue-500 text-sm mt-1"
-    >
-      {showAllComments
-        ? "See less"
-        : `See more (${post.comments.length - 1})`}
-    </button>
-  </div>
-)}
+        {/* See More Button */}
+        {post.comments?.length > 1 && (
+          <div className="flex justify-end">
+            <button
+              onClick={() => setShowAllComments(!showAllComments)}
+              className="text-blue-500 text-sm mt-1"
+            >
+              {showAllComments
+                ? "See less"
+                : `See more (${post.comments.length - 1})`}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

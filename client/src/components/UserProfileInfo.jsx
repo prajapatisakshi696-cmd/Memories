@@ -1,11 +1,21 @@
 import { PenBox, Verified, MapPin, Calendar, BadgeCheck } from "lucide-react";
 import moment from "moment";
 import React from "react";
+import { useState, useEffect } from "react";
 import Avatar from "react-avatar";
-import { UPLOADS_BASE} from "../helper";
-
+import { getImageUrl, UPLOADS_BASE } from "../helper";
 
 const UserProfileInfo = ({ user, posts, profileId, setShowEdits }) => {
+  const [counts, setCounts] = useState({ followers: 0, following: 0 });
+
+  useEffect(() => {
+    if (!profileId) return;
+   fetch(`/api/users/${profileId}/follow-count`)
+      .then((res) => res.json())
+      .then((data) => setCounts(data))
+      .catch((err) => console.error(err));
+  }, [profileId]);
+
   return (
     <div className="relative py-4 px-6 md:px-8 bg-white">
       <div className="flex flex-col md:flex-row items-start gap-6">
@@ -13,7 +23,7 @@ const UserProfileInfo = ({ user, posts, profileId, setShowEdits }) => {
         <div className="w-32 h-32 border-4 border-white shadow-lg absolute -top-16 rounded-full overflow-hidden">
           {user?.profile_picture ? (
             <img
-              src={`${UPLOADS_BASE}${user.profile_picture.replace("uploads/","")}`}
+              src={getImageUrl(user.profile_picture)}
               alt={user?.username}
               className="w-32 h-32 rounded-full object-cover"
             />
@@ -106,25 +116,8 @@ const UserProfileInfo = ({ user, posts, profileId, setShowEdits }) => {
                 Comments
               </span>
             </div>
-            {/* Followers */}
-            <div className="cursor-pointer">
-              <span className="sm:text-xl font-bold text-gray-900">
-                {user?.followers?.length || 0}
-              </span>
-              <span className="text-xs sm:text-sm text-gray-500 ml-1.5">
-                Followers
-              </span>
-            </div>
 
-            {/* Following */}
-            <div className="cursor-pointer">
-              <span className="sm:text-xl font-bold text-gray-900">
-                {user?.following?.length || 0}
-              </span>
-              <span className="text-xs sm:text-sm text-gray-500 ml-1.5">
-                Following
-              </span>
-            </div>
+      
           </div>
         </div>
       </div>

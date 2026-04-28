@@ -4,7 +4,7 @@ import StoriesBar from "../components/StoriesBar";
 import PostCard from "../components/PostCard"; 
 import Sponsored from "../assets/sponsored_img.png";
 import { useAuth } from "../AuthContext";
-import { API_BASE } from '../helper';
+import { API_BASE } from "../helper";
 
 const Feed = ({ user }) => {
   const [feeds, setFeeds] = useState([]);
@@ -12,15 +12,15 @@ const Feed = ({ user }) => {
 
   // ✅ Fetch posts (GET request)
   const fetchPosts = async () => {
+    setLoading(true); // spinner start
     try {
-      const res = await fetch(`${API_BASE}/api/posts`); // ✅ correct API
+      const res = await fetch(`${API_BASE}/api/posts`);
       const data = await res.json();
-
       setFeeds(data);
-      setLoading(false);
     } catch (error) {
       console.log("Error fetching posts:", error);
-      setLoading(false);
+    } finally {
+      setLoading(false); // spinner stop
     }
   };
 
@@ -28,7 +28,12 @@ const Feed = ({ user }) => {
     fetchPosts();
   }, []);
 
-  return !loading ? (
+  // ✅ Show spinner only while loading
+  if (loading) {
+    return <Loading />;
+  }
+
+  return (
     <div
       className="h-full overflow-y-scroll no-scrollbar py-10 
       xl:pr-5 flex items-start justify-center xl:gap-8"
@@ -68,8 +73,6 @@ const Feed = ({ user }) => {
         <h1 className="mt-4 text-slate-800 font-semibold">Recent messages</h1>
       </div>
     </div>
-  ) : (
-    <Loading />
   );
 };
 
