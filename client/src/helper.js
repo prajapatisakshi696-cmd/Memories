@@ -1,16 +1,17 @@
-// client/src/helper.js
-
-// Backend base URL (Render se environment variable ke through set hoga)
+// Base URLs from environment variables
 export const API_BASE = import.meta.env.VITE_API_URL;
 export const UPLOADS_BASE = import.meta.env.VITE_UPLOADS_URL;
 
+/**
+ * Clean and return full image URL
+ * @param {string} path - Image path stored in DB (e.g. "/uploads/filename.png")
+ * @returns {string|null} - Full URL to access image
+ */
 export const getImageUrl = (path) => {
-  // Agar path already full URL hai to use hi return karo
-  if (path.startsWith("http")) {
-    return path;
-  }
+  if (!path) return null;
 
-  // Otherwise backend domain prepend karo
-  const UPLOADS_BASE = import.meta.env.VITE_UPLOADS_URL;
-  return `${UPLOADS_BASE}${path}`;
+  // Remove leading slash and "uploads/"
+  const cleanPath = path.replace(/^\/?uploads\//, "");
+
+  return `${UPLOADS_BASE}/${cleanPath}`;
 };

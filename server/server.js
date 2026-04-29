@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
+import compression from "compression";
 
 import usersRoutes from "./routes/user.js";
 import authRoutes from "./routes/auth.js";
@@ -33,8 +34,10 @@ app.use(cors({
 app.use(express.json());
 
 // Static folder
-app.use("/uploads", express.static("uploads"));
-
+app.use(compression()); // enable gzip/brotli
+app.use("/uploads", express.static("uploads", {
+  maxAge: "1d", // cache for 1 day
+}));
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postsRoutes);
