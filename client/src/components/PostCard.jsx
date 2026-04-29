@@ -28,7 +28,7 @@ const PostCard = ({ post, feeds, setFeeds, user }) => {
 
   const getProfilePicture = (post) => {
     if (post.userId?.profile_picture)
-      return getImageUrl(post.userId.profile_picture);
+      return (post.userId.profile_picture);
     return null; // fallback to Avatar
   };
 
@@ -132,7 +132,7 @@ const PostCard = ({ post, feeds, setFeeds, user }) => {
         <div className="flex items-center gap-3 cursor-pointer">
           {post.userId?.profile_picture ? (
             <img
-              src={getImageUrl(post.userId.profile_picture)}
+              src={(post.userId.profile_picture)}
               alt={post.userId?.username || post.creator || "User"}
               className="w-12 h-12 rounded-full object-cover"
             />
@@ -178,7 +178,7 @@ const PostCard = ({ post, feeds, setFeeds, user }) => {
           {post.images.map((img, index) => (
             <img
               key={index}
-              src={getImageUrl(img)}
+              src={(img)}
               alt="post"
               className="w-full rounded-md"
             />

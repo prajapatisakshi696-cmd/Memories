@@ -3,7 +3,7 @@ import { dummyUserData } from "../assets/assets";
 import { X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { API_BASE } from '../helper';
+import { API_BASE, getImageUrl } from '../helper';
 import Avatar from "react-avatar";
 const CreatePost = ({ user }) => {
   const navigate = useNavigate();
@@ -63,7 +63,7 @@ const CreatePost = ({ user }) => {
         <div className="w-12 h-12 rounded-full overflow-hidden">
           {storedUser?.profile_picture ? (
             <img
-              src={`http://localhost:5000${storedUser?.profile_picture}`}
+              src={`${storedUser?.profile_picture}`}
               alt={storedUser?.username}
               className="w-12 h-12 rounded-full object-cover"
             />

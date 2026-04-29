@@ -23,7 +23,7 @@ const UserProfileInfo = ({ user, posts, profileId, setShowEdits }) => {
         <div className="w-32 h-32 border-4 border-white shadow-lg absolute -top-16 rounded-full overflow-hidden">
           {user?.profile_picture ? (
             <img
-              src={getImageUrl(user.profile_picture)}
+              src={(user.profile_picture)}
               alt={user?.username}
               className="w-32 h-32 rounded-full object-cover"
             />
