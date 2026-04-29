@@ -1,27 +1,18 @@
-
 import express from "express";
 import multer from "multer";
 import Post from "../models/Post.js";
+import cloudinary from "../configs/cloudinary.js";
 
 const router = express.Router();
 
-// ✅ Multer setup
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
-
-const upload = multer({ storage });
+// ✅ Multer setup with Cloudinary
+const upload = multer({ storage: cloudinary.storage });
 
 // ================= CREATE POST =================
 router.post("/create-post", upload.array("images", 5), async (req, res) => {
   try {
     console.log("BODY:", req.body);
-    console.log("FILES:", req.files); // ✅ correct
+    console.log("FILES:", req.files);
 
     const { title, message, userId, creator } = req.body;
 
@@ -29,9 +20,8 @@ router.post("/create-post", upload.array("images", 5), async (req, res) => {
       return res.status(400).json({ message: "userId missing" });
     }
 
-    const images = req.files
-      ? req.files.map((file) => `/uploads/${file.filename}`)
-      : [];
+    // ✅ Cloudinary returns `file.path` as public URL
+    const images = req.files ? req.files.map((file) => file.path) : [];
 
     const newPost = new Post({
       title,
@@ -69,7 +59,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// routes/posts.js
+// ================= GET USER POSTS =================
 router.get("/user/:userId", async (req, res) => {
   try {
     const posts = await Post.find({ userId: req.params.userId })
@@ -80,7 +70,6 @@ router.get("/user/:userId", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-
 
 // ================= LIKE POST =================
 router.put("/:id/like", async (req, res) => {
@@ -110,11 +99,8 @@ router.put("/:id/like", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-router.get("/test", (req, res) => {
-  res.send("Posts router working!");
-});
 
-// -------- Add comment --------
+// ================= COMMENT =================
 router.post("/:postId/comment", async (req, res) => {
   try {
     const { postId } = req.params;
@@ -129,12 +115,15 @@ router.post("/:postId/comment", async (req, res) => {
     post.comments.push(newComment);
 
     const updatedPost = await post.save();
-    res.status(200).json(updatedPost); // frontend ko updated post bhej rahe
+    res.status(200).json(updatedPost);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 });
 
+router.get("/test", (req, res) => {
+  res.send("Posts router working!");
+});
 
 export default router;
