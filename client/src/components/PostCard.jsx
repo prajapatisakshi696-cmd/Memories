@@ -132,7 +132,7 @@ const PostCard = ({ post, feeds, setFeeds, user }) => {
         <div className="flex items-center gap-3 cursor-pointer">
           {post.userId?.profile_picture ? (
             <img
-              src={(post.userId.profile_picture)}
+              src={getImageUrl(post.userId.profile_picture)}
               alt={post.userId?.username || post.creator || "User"}
               className="w-12 h-12 rounded-full object-cover"
             />
@@ -178,7 +178,7 @@ const PostCard = ({ post, feeds, setFeeds, user }) => {
           {post.images.map((img, index) => (
             <img
               key={index}
-              src={(img)}
+              src={getImageUrl(img)}
               alt="post"
               className="w-full rounded-md"
             />

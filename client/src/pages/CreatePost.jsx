@@ -63,7 +63,7 @@ const CreatePost = ({ user }) => {
         <div className="w-12 h-12 rounded-full overflow-hidden">
           {storedUser?.profile_picture ? (
             <img
-              src={`${storedUser?.profile_picture}`}
+              src={getImageUrl(storedUser?.profile_picture)}
               alt={storedUser?.username}
               className="w-12 h-12 rounded-full object-cover"
             />
@@ -103,7 +103,7 @@ const CreatePost = ({ user }) => {
           {images.map((image, i) => (
             <div key={i} className="relative group">
               <img
-                src={URL.createObjectURL(image)}
+                src={getImageUrl(URL.createObjectURL(image))}
                 className="h-20 rounded-md object-cover"
                 alt=""
               />

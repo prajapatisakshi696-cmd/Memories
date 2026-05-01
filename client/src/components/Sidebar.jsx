@@ -46,7 +46,7 @@ const Sidebar = ({ sidebarOpen: isOpen, setSidebarOpen, user, onLogout }) => {
           <div className="w-10 h-10 rounded-full overflow-hidden">
             {user?.profile_picture ? (
               <img
-                src={(user.profile_picture)}
+                src={getImageUrl(user.profile_picture)}
                 alt={user?.username}
                 className="w-full h-full object-cover"
               />
