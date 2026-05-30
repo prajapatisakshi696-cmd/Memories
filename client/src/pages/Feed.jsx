@@ -11,6 +11,7 @@ const Feed = ({ user }) => {
   const [loading, setLoading] = useState(true);
 
   // ✅ Fetch posts (GET request)
+  console.log(API_BASE);
   const fetchPosts = async () => {
     setLoading(true); // spinner start
     try {
@@ -23,6 +24,8 @@ const Feed = ({ user }) => {
       setLoading(false); // spinner stop
     }
   };
+
+  
 
   useEffect(() => {
     fetchPosts();
