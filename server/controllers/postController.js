@@ -27,7 +27,7 @@ export const createPost = async (req, res) => {
       title: req.body.title,
       message: req.body.message,
       user: req.body.userId,
-      image: imageUrl,
+      images: imageUrl,
     });
 
     await newPost.save();
