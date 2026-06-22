@@ -167,6 +167,8 @@ const handleDelete = async (postId) => {
     }
   } catch (err) {
     console.error("Delete error:", err);
+    console.log("Profile Picture:", post.userId?.profile_picture);
+console.log("Final URL:", getImageUrl(post.userId?.profile_picture));
   }
 };
 
@@ -182,7 +184,9 @@ const handleDelete = async (postId) => {
             src={getImageUrl(post.userId.profile_picture)}
             alt={post.userId?.username || "User"}
             className="w-12 h-12 rounded-full object-cover"
-            onError={(e) => console.log("Failed URL:", e.target.src)}
+            onError={(e) => console.log("Failed URL:", e.target.src)
+              
+            }
           />
         ) : (
           <Avatar
