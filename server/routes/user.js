@@ -50,6 +50,9 @@ router.patch("/:id", upload.single("profile_picture"), async (req, res) => {
     if (location) updateData.location = location;
     if (req.file) updateData.profile_picture = `/uploads/${req.file.filename}`;
 
+    // ✅ Cloudinary returns file.path as public URL
+    if (req.file) updateData.profile_picture = req.file.path;
+
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
       updateData,
@@ -62,6 +65,7 @@ router.patch("/:id", upload.single("profile_picture"), async (req, res) => {
 
     res.json(updatedUser);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
