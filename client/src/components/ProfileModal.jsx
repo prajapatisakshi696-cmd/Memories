@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Pencil, X as CloseIcon } from "lucide-react";
 import { useAuth } from "../AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +13,16 @@ const ProfileModal = ({ onClose }) => {
     profile_picture: null,
     full_name: currentUser?.full_name || "",
   });
+
+  useEffect(() => {
+  setEditForm({
+    username: currentUser?.username || "",
+    bio: currentUser?.bio || "",
+    location: currentUser?.location || "",
+    profile_picture: null,
+    full_name: currentUser?.full_name || "",
+  });
+}, [currentUser]);
 
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
@@ -30,7 +40,7 @@ const ProfileModal = ({ onClose }) => {
 
     try {
       const res = await fetch(
-  `    ${API_BASE}/api/users/${currentUser._id}`,
+  `${API_BASE}/api/users/${currentUser._id}`,
         {
           method: "PATCH",
           body: formData,
@@ -70,7 +80,7 @@ const ProfileModal = ({ onClose }) => {
             <div className="relative w-24 h-24">
               {currentUser?.profile_picture ? (
                 <img
-                  src={`http://localhost:5000${currentUser.profile_picture}`}
+                  src={getImageUrl(currentUser.profile_picture)}
                   alt={currentUser?.username}
                   className="w-24 h-24 rounded-full object-cover border border-gray-300"
                 />
