@@ -13,21 +13,34 @@ export const getPosts = async (req, res) => {
 
 // CREATE a new post
 export const createPost = async (req, res) => {
+  console.log("CREATE POST API HIT");
+  console.log("FILES:", req.files);
   try {
-    let imageUrl = "";
+    let imageUrls = [];
 
-    if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: "create-post",
-      });
-      imageUrl = result.secure_url;
-    }
+for (const file of req.files) {
+  const result = await cloudinary.uploader.upload(file.path, {
+    folder: "create-post",
+  });
+
+  console.log("FULL RESULT:", result);
+  // console.log("SECURE URL:", result.secure_url);
+
+  console.log("Cloudinary Result:", result);
+  console.log("Secure URL:", result.secure_url);
+
+  imageUrls.push(result.secure_url);
+}
+
+console.log("Final Image URLs:", imageUrls);
+
+console.log("Image URLs:", imageUrls);
 
     const newPost = new Post({
       title: req.body.title,
       message: req.body.message,
       user: req.body.userId,
-      images: imageUrl,
+      images: imageUrls,
     });
 
     await newPost.save();

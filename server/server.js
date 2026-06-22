@@ -10,6 +10,8 @@ import postsRoutes from "./routes/posts.js";
 import followRoutes from "./routes/follow.js";
 
 dotenv.config();
+console.log("ENV TEST:", process.env.CLOUD_NAME);
+console.log("ENV API KEY:", process.env.CLOUDINARY_API_KEY);
 const app = express();
 
 const allowedOrigins = [
@@ -26,7 +28,7 @@ app.use(cors({
       callback(new Error("Not allowed by CORS"));
     }
   },
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   credentials: true
 }));
 

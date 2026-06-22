@@ -1,47 +1,36 @@
 import express from "express";
 import multer from "multer";
 import Post from "../models/Post.js";
-import cloudinary from "../configs/cloudinary.js";
+import cloudinary, { storage } from "../configs/cloudinary.js";
 
 const router = express.Router();
 
-// ✅ Multer setup with Cloudinary
-const upload = multer({ storage: cloudinary.storage });
+const upload = multer({ storage });
 
-// ================= CREATE POST =================
 router.post("/create-post", upload.array("images", 5), async (req, res) => {
   try {
-    console.log("BODY:", req.body);
     console.log("FILES:", req.files);
 
-    const { title, message, userId, creator } = req.body;
+    const images = req.files
+      ? req.files.map((file) => file.path)
+      : [];
 
-    if (!userId) {
-      return res.status(400).json({ message: "userId missing" });
-    }
-
-    // ✅ Cloudinary returns `file.path` as public URL
-    const images = req.files ? req.files.map((file) => file.path) : [];
+    console.log("Images:", images);
 
     const newPost = new Post({
-      title,
-      message,
-      userId,
-      creator,
+      title: req.body.title,
+      message: req.body.message,
+      userId: req.body.userId,
+      creator: req.body.creator,
       images,
     });
 
     const savedPost = await newPost.save();
 
-    const populatedPost = await Post.findById(savedPost._id).populate(
-      "userId",
-      "username full_name profile_picture"
-    );
-
-    res.status(201).json(populatedPost);
+    res.status(201).json(savedPost);
   } catch (err) {
-    console.error("ERROR:", err);
-    res.status(500).json({ message: "Server error" });
+    console.error(err);
+    res.status(500).json({ message: err.message });
   }
 });
 
@@ -119,6 +108,23 @@ router.post("/:postId/comment", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
+  }
+});
+// DELETE POST
+router.delete("/:id", async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    await Post.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({ message: "Post deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
   }
 });
 

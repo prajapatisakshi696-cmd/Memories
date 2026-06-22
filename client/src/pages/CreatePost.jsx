@@ -33,9 +33,11 @@ const CreatePost = ({ user }) => {
         body: formData,
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to create post");
-
+   const text = await res.text();
+console.log("SERVER RESPONSE:", text);
+if (!res.ok) {
+  throw new Error(text);
+}
       toast.success("Post Added ✅");
       navigate("/");
     } catch (error) {
