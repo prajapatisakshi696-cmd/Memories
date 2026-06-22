@@ -10,7 +10,8 @@ router.get("/:id/followers", async (req, res) => {
   try {
     const followers = await Follow.find({ userId: req.params.id })
       .populate("followerId", "username full_name profile_picture");
-    res.json(followers.map(f => f.followerId));
+
+    res.json(followers.map((f) => f.followerId));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -21,7 +22,8 @@ router.get("/:id/following", async (req, res) => {
   try {
     const following = await Follow.find({ followerId: req.params.id })
       .populate("userId", "username full_name profile_picture");
-    res.json(following.map(f => f.userId));
+
+    res.json(following.map((f) => f.userId));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -30,10 +32,88 @@ router.get("/:id/following", async (req, res) => {
 // Get follow counts
 router.get("/:id/follow-count", async (req, res) => {
   try {
-    const followersCount = await Follow.countDocuments({ userId: req.params.id });
-    const followingCount = await Follow.countDocuments({ followerId: req.params.id });
-    res.json({ followers: followersCount, following: followingCount });
+    const followersCount = await Follow.countDocuments({
+      userId: req.params.id,
+    });
+
+    const followingCount = await Follow.countDocuments({
+      followerId: req.params.id,
+    });
+
+    res.json({
+      followers: followersCount,
+      following: followingCount,
+    });
   } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Discover users
+router.get("/discover/:id", async (req, res) => {
+  try {
+    const users = await User.find({
+      _id: { $ne: req.params.id },
+    });
+
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Search users
+router.get("/search", async (req, res) => {
+  const { query } = req.query;
+
+  try {
+    const users = await User.find({
+      $or: [
+        { username: { $regex: query, $options: "i" } },
+        { full_name: { $regex: query, $options: "i" } },
+      ],
+    });
+
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Follow / Unfollow user
+router.put("/:id/follow", async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const targetUserId = req.params.id;
+
+    if (userId === targetUserId) {
+      return res
+        .status(400)
+        .json({ message: "You cannot follow yourself" });
+    }
+
+    const existingFollow = await Follow.findOne({
+      followerId: userId,
+      userId: targetUserId,
+    });
+
+    if (existingFollow) {
+      await Follow.deleteOne({
+        followerId: userId,
+        userId: targetUserId,
+      });
+
+      return res.json({ following: false });
+    }
+
+    await Follow.create({
+      followerId: userId,
+      userId: targetUserId,
+    });
+
+    res.json({ following: true });
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -42,25 +122,30 @@ router.get("/:id/follow-count", async (req, res) => {
 router.patch("/:id", upload.single("profile_picture"), async (req, res) => {
   try {
     const { full_name, username, bio, location } = req.body;
+
     const updateData = {};
 
     if (full_name) updateData.full_name = full_name;
     if (username) updateData.username = username;
     if (bio) updateData.bio = bio;
     if (location) updateData.location = location;
-    if (req.file) updateData.profile_picture = `/uploads/${req.file.filename}`;
 
-    // ✅ Cloudinary returns file.path as public URL
-    if (req.file) updateData.profile_picture = req.file.path;
+    if (req.file) {
+      updateData.profile_picture = req.file.path;
+    }
 
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
       updateData,
-      { returnDocument: "after" }
+      {
+        new: true,
+      }
     );
 
     if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({
+        message: "User not found",
+      });
     }
 
     res.json(updatedUser);
@@ -70,38 +155,22 @@ router.patch("/:id", upload.single("profile_picture"), async (req, res) => {
   }
 });
 
-// Get single user by ID
+// Get single user by ID (ALWAYS KEEP THIS LAST)
 router.get("/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
     res.json(user);
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-router.get("/discover/:id", async (req, res) => {
-  try {
-    const users = await User.find({ _id: { $ne: req.params.id } });
-    res.json(users);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-router.get("/search", async (req, res) => {
-  const { query } = req.query;
-  try {
-    const users = await User.find({
-      $or: [
-        { username: { $regex: query, $options: "i" } },
-        { full_name: { $regex: query, $options: "i" } }
-      ]
+    res.status(500).json({
+      message: "Server error",
     });
-    res.json(users);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
   }
 });
 

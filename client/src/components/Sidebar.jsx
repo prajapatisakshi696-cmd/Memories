@@ -4,9 +4,12 @@ import MenuItems from "../components/MenuItems";
 import { CirclePlus, LogOut } from "lucide-react";
 import Avatar from "react-avatar"; 
 import { getImageUrl } from "../helper";
+import { useAuth } from "../AuthContext";
 
-const Sidebar = ({ sidebarOpen: isOpen, setSidebarOpen, user, onLogout }) => {
-  const navigate = useNavigate();
+
+const Sidebar = ({ sidebarOpen: isOpen, setSidebarOpen, onLogout }) => {
+  const { currentUser } = useAuth();
+    const navigate = useNavigate();
 
   return (
     <div
@@ -44,15 +47,15 @@ const Sidebar = ({ sidebarOpen: isOpen, setSidebarOpen, user, onLogout }) => {
         <div className="flex items-center gap-2">
           {/* Avatar */}
           <div className="w-10 h-10 rounded-full overflow-hidden">
-            {user?.profile_picture ? (
+            {currentUser?.profile_picture ? (
               <img
-                src={getImageUrl(user.profile_picture)}
-                alt={user?.username}
+                src={getImageUrl(currentUser.profile_picture)}
+                alt={currentUser?.username}
                 className="w-full h-full object-cover"
               />
             ) : (
               <Avatar
-                name={user?.full_name || user?.username || "User"}
+                name={currentUser?.full_name || currentUser?.username || "currentUser"}
                 size="40"
                 round={true}
               />
@@ -62,10 +65,10 @@ const Sidebar = ({ sidebarOpen: isOpen, setSidebarOpen, user, onLogout }) => {
           {/* Name */}
           <div>
             <h1 className="text-sm font-medium">
-              {user?.full_name || user?.username || "User"}
+              {currentUser?.full_name || currentUser?.username || "User"}
             </h1>
             <p className="text-xs text-gray-500">
-              @{user?.username || "username"}
+              @{currentUser?.username || "username"}
             </p>
           </div>
         </div>

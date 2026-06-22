@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {BadgeCheck,Heart, MessageCircle,Trash2,MoreVertical} from "lucide-react";
 import Avatar from "react-avatar";
 import { useAuth } from "../AuthContext";
 import { API_BASE, getImageUrl } from "../helper";
 import moment from "moment";
+
 
 const PostCard = ({ post, feeds, setFeeds, user }) => {
   const { currentUser, setCurrentUser } = useAuth();
@@ -11,6 +12,9 @@ const PostCard = ({ post, feeds, setFeeds, user }) => {
   const [showAllComments, setShowAllComments] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+
+
+  const menuRef = useRef(null);
 
   // ---------------- Helper functions ----------------
   const getUsername = (post) => {
@@ -150,6 +154,20 @@ console.log(
   getImageUrl(post.userId?.profile_picture)
 );
 
+useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (menuRef.current && !menuRef.current.contains(event.target)) {
+      setShowMenu(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, []);
+
 const handleDelete = async (postId) => {
   console.log("Deleting post:", postId);
 
@@ -173,46 +191,60 @@ console.log("Final URL:", getImageUrl(post.userId?.profile_picture));
 };
 
 
+
   return (
   <div className="bg-white rounded-xl shadow p-4 space-y-4 w-full max-w-2xl">
     {/* TOP ROW */}
-    <div className="flex items-start justify-between">
-      {/* LEFT SIDE - User Info */}
-      <div className="flex items-center gap-3 cursor-pointer">
-        {post.userId?.profile_picture ? (
-          <img
-            src={getImageUrl(post.userId.profile_picture)}
-            alt={post.userId?.username || "User"}
-            className="w-12 h-12 rounded-full object-cover"
-            onError={(e) => console.log("Failed URL:", e.target.src)
-              
-            }
-          />
-        ) : (
-          <Avatar
-            name={post.userId?.full_name || post.creator || "User"}
-            size="48"
-            round
-          />
-        )}
+<div className="flex items-center justify-between">
+  {/* LEFT SIDE - User Info */}
+  <div className="flex items-center gap-3 cursor-pointer">
+    {post.userId?.profile_picture ? (
+      <img
+        src={getImageUrl(post.userId.profile_picture)}
+        alt={post.userId?.username || "User"}
+        className="w-12 h-12 rounded-full object-cover"
+        onError={(e) => console.log("Failed URL:", e.target.src)}
+      />
+    ) : (
+      <Avatar
+        name={post.userId?.full_name || post.creator || "User"}
+        size="48"
+        round
+      />
+    )}
 
-        <div>
-          <p className="font-semibold flex items-center gap-1">
-            {getFullName(post)}
-            <BadgeCheck className="w-4 h-4 text-blue-500" />
-          </p>
+    <div>
+      <p className="font-semibold flex items-center gap-1">
+        {getFullName(post)}
+        <BadgeCheck className="w-4 h-4 text-blue-500" />
+      </p>
 
-          <p className="text-sm text-gray-500">@{getUsername(post)}</p>
+      <p className="text-sm text-gray-500">@{getUsername(post)}</p>
 
-          <p className="text-xs text-gray-400">
-            {moment(post.createdAt).fromNow()}
-          </p>
-        </div>
-      </div>
+      <p className="text-xs text-gray-400">
+        {moment(post.createdAt).fromNow()}
+      </p>
+    </div>
+  </div>
 
-      {/* RIGHT SIDE - 3 Dots Menu */}
-      <div className="relative">
-        <button
+  {/* RIGHT SIDE - Follow + Menu */}
+  <div className="flex items-center gap-2">
+    {currentUser?._id !== post.userId?._id && (
+      <button
+        onClick={() => handleFollow(post.userId?._id)}
+        className={`px-4 py-1.5 rounded-lg text-sm font-medium transition ${
+          isFollowing
+            ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            : "bg-blue-500 text-white hover:bg-blue-600"
+        }`}
+      >
+        {isFollowing ? "Following" : "Follow"}
+      </button>
+    )}
+
+    {currentUser?._id === post.userId?._id && (
+<div className="relative" ref={menuRef}>       
+   <button
           onClick={() => setShowMenu(!showMenu)}
           className="p-1 rounded-full hover:bg-gray-100"
         >
@@ -221,34 +253,22 @@ console.log("Final URL:", getImageUrl(post.userId?.profile_picture));
 
         {showMenu && (
           <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg z-50">
-            {currentUser?._id !== post.userId?._id && (
-              <button
-                onClick={() => {
-                  handleFollow(post.userId?._id);
-                  setShowMenu(false);
-                }}
-                className="w-full text-left px-4 py-2 hover:bg-gray-100"
-              >
-                {isFollowing ? "Unfollow" : "Follow"}
-              </button>
-            )}
-
-            {currentUser?._id === post.userId?._id && (
-              <button
-                onClick={() => {
-                  handleDelete(post._id);
-                  setShowMenu(false);
-                }}
-                className="w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100 flex items-center gap-2"
-              >
-                <Trash2 size={16} />
-                Delete Post
-              </button>
-            )}
+            <button
+              onClick={() => {
+                handleDelete(post._id);
+                setShowMenu(false);
+              }}
+              className="w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100 flex items-center gap-2"
+            >
+              <Trash2 size={16} />
+              Delete Post
+            </button>
           </div>
         )}
       </div>
-    </div>
+    )}
+  </div>
+</div>
 
     {/* Post Content */}
     <div className="text-gray-800 text-sm whitespace-pre-line">

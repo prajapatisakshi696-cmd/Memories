@@ -30,7 +30,7 @@ const ProfileModal = ({ onClose }) => {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/users/${currentUser._id}`,
+  `    ${API_BASE}/api/users/${currentUser._id}`,
         {
           method: "PATCH",
           body: formData,
