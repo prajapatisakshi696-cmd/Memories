@@ -3,7 +3,7 @@ import { Pencil, X as CloseIcon } from "lucide-react";
 import { useAuth } from "../AuthContext";
 import { useNavigate } from "react-router-dom";
 import Avatar from "react-avatar";
-
+import { API_BASE, getImageUrl } from "../helper";
 const ProfileModal = ({ onClose }) => {
   const { currentUser, setCurrentUser } = useAuth();
   const [editForm, setEditForm] = useState({
