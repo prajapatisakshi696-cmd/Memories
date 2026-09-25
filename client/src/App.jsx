@@ -8,6 +8,7 @@ import Profile from "./pages/Profile";
 import Layout from "./pages/Layout";
 import Connections from "./pages/Connections";
 import Messages from "./pages/Messages";
+// import ChatBox from "./components/ChatBox";
 import { useAuth } from "./AuthContext";
 import Discover from "./pages/Discover";
 
@@ -38,7 +39,6 @@ const { currentUser, logout } = useAuth();
    <Route path="messages" element={<Messages />} />
    {/* <Route path="likebutton" element={<LikeButton/>}/>
    <Route path="comment" element={<CommentSection/>}/> */}
-   <Route path="messages/:userId" element={<Messages />} />
    <Route path="*" element={<Navigate to="/feed" replace />} />
  </Route>
         </>

@@ -1,55 +1,112 @@
-import React from "react";
-import { dummyConnectionsData } from "../assets/assets";
-import { useNavigate } from "react-router-dom";
-import { MessageSquare, Eye } from "lucide-react";
+import { useEffect, useState, useCallback } from "react";
+import { useAuth } from "../AuthContext";
+import { useSocket } from "../context/SocketContext";
+import { fetchConversations } from "../api/chatApi";
+import ChatSidebar from "../components/chat/ChatSidebar";
+import ChatWindow from "../components/chat/ChatWindow";
 
 const Messages = () => {
-  const navigate = useNavigate();
+  const { currentUser } = useAuth();
+  const { socket } = useSocket();
+
+  const [conversations, setConversations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeConversation, setActiveConversation] = useState(null);
+
+  const loadConversations = useCallback(() => {
+    fetchConversations()
+      .then(setConversations)
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    if (!currentUser?._id) return;
+    loadConversations();
+  }, [currentUser, loadConversations]);
+
+  useEffect(() => {
+    if (!socket) return;
+    const refresh = () => loadConversations();
+
+    socket.on("receive_message", refresh);
+    socket.on("conversation_updated", refresh);
+    socket.on("messages_seen", refresh);
+
+    return () => {
+      socket.off("receive_message", refresh);
+      socket.off("conversation_updated", refresh);
+      socket.off("messages_seen", refresh);
+    };
+  }, [socket, loadConversations]);
+
+  useEffect(() => {
+    if (!activeConversation?._id) return;
+    const updated = conversations.find((c) => c._id === activeConversation._id);
+    if (updated) setActiveConversation(updated);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversations]);
+
+  const handleSelect = (conv) => {
+    setActiveConversation(conv);
+  };
+
+  const handleBack = () => {
+    setActiveConversation(null);
+  };
+
+  const handleStartNewChat = (user) => {
+    const existing = conversations.find((c) => c.user._id === user._id);
+    if (existing) {
+      setActiveConversation(existing);
+      return;
+    }
+
+    setActiveConversation({
+      _id: null,
+      user,
+      lastMessage: "",
+      lastMessageTime: null,
+      unreadCount: 0,
+    });
+  };
+
+  const handleConversationCreated = (newConversationId) => {
+    setActiveConversation((prev) => (prev ? { ...prev, _id: newConversationId } : prev));
+    loadConversations();
+  };
+
   return (
-    <div className="min-h-screen relative bg-slate-50">
-      <div className="max-w-6xl mx-auto p-6">
-        {/* Title */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Messages</h1>
-          <p className="text-slate-600">Talk to your friends and family</p>
+<div className="h-full w-full bg-white md:rounded-2xl md:shadow md:m-4 md:h-[calc(100%-2rem)] overflow-hidden overflow-x-hidden">      <div className="flex h-full">
+        <div
+          className={`w-full md:w-[360px] border-r border-gray-100 shrink-0 ${
+            activeConversation ? "hidden md:block" : "block"
+          }`}
+        >
+          <ChatSidebar
+            conversations={conversations}
+            activeConversationId={activeConversation?._id}
+            currentUserId={currentUser._id}
+            onSelect={handleSelect}
+            onStartNewChat={handleStartNewChat}
+            loading={loading}
+          />
         </div>
-        {/* connected users */}
-        <div className="flex flex-col gap-3">
-          {dummyConnectionsData.map((user) => (
-            <div
-              key={user._id}
-              className="w-full max-w-fit flex items-center gap-4 p-3 bg-white shadow rounded-md"
-            >
-              <img
-                src={user.profile_picture}
-                alt={user.full_name}
-                className="rounded-full w-10 h-10"
-              />
-              <div className="flex-1">
-                <p className="font-semibold text-slate-900 text-sm">
-                  {user.full_name}
-                </p>
-                <p className="text-slate-600 text-xs">@{user.username}</p>
-                <p className="text-slate-500 text-xs truncate">{user.bio}</p>
-              </div>
 
-              <div className="flex flex-col gap-2">
-                <button
-                  onClick={() => navigate(`/messages/${user._id}`)}
-                  className="w-8 h-8 flex items-center justify-center rounded bg-slate-100 hover:bg-slate-200 text-slate-800 active:scale-95 transition"
-                >
-                  <MessageSquare className="w-4 h-4" />
-                </button>
-
-                <button
-                  onClick={() => navigate(`/profile/${user._id}`)}
-                  className="w-8 h-8 flex items-center justify-center rounded bg-slate-100 hover:bg-slate-200 text-slate-800 active:scale-95 transition"
-                >
-                  <Eye className="w-4 h-4" />
-                </button>
-              </div>
+        <div className={`flex-1 ${!activeConversation ? "hidden md:flex" : "flex"}`}>
+          {activeConversation ? (
+            <ChatWindow
+              currentUser={currentUser}
+              conversation={activeConversation}
+              onBack={handleBack}
+              onConversationUpdate={loadConversations}
+              onConversationCreated={handleConversationCreated}
+            />
+          ) : (
+            <div className="hidden md:flex flex-1 items-center justify-center text-gray-400 text-sm">
+              Select a conversation to start chatting
             </div>
-          ))}
+          )}
         </div>
       </div>
     </div>

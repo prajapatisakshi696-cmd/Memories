@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Users, UserCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../AuthContext";
-import { API_BASE } from "../helper";
+import { getImageUrl, API_BASE } from "../helper";
+
 
 const Connections = () => {
   const navigate = useNavigate();
@@ -105,50 +106,50 @@ const Connections = () => {
 
         {/* Users List */}
         <div className="space-y-4">
-          {dataArray.find((item) => item.label === currentTab)?.value.length ===
-            0 && (
-            <p className="text-gray-500 text-center">
-              No {currentTab.toLowerCase()} yet
-            </p>
-          )}
+  {dataArray.find((item) => item.label === currentTab)?.value.length === 0 && (
+    <p className="text-gray-500 text-center">
+      No {currentTab.toLowerCase()} yet
+    </p>
+  )}
 
-          {dataArray
-            .find((item) => item.label === currentTab)
-            ?.value.map((user) => (
-              <div
-                key={user._id}
-                className="flex items-center justify-between bg-white p-4 rounded-lg shadow"
-              >
-                <div className="flex items-center gap-3">
-                  <img
-                    src={
-                      user?.profile_picture
-                        ? `http://localhost:5000${user.profile_picture}`
-                        : <Avatar
-          name={post.userId?.full_name || post.creator || "User"}
-          size="48"
-          round
-        />
-                    }
-                    alt="user"
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                  <div>
-                    <p className="font-semibold">{user?.full_name || "User"}</p>
-                    <p className="text-sm text-gray-500">
-                      @{user?.username || "username"}
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => navigate(`/profile/${user?._id}`)}
-                  className="bg-black text-white px-3 py-1 rounded"
-                >
-                  View Profile
-                </button>
-              </div>
-            ))}
+  {dataArray
+    .find((item) => item.label === currentTab)
+    ?.value.map((user) => (
+      <div
+        key={user._id}
+        className="flex items-center justify-between bg-white p-4 rounded-lg shadow hover:shadow-md transition"
+      >
+        <div className="flex items-center gap-3">
+          <img
+            src={
+              user?.profile_picture
+                ? getImageUrl(user.profile_picture)
+                : "https://ui-avatars.com/api/?name=User"
+            }
+            alt={user?.username}
+            className="w-12 h-12 rounded-full object-cover"
+          />
+
+          <div>
+            <p className="font-semibold">
+              {user?.full_name || "User"}
+            </p>
+
+            <p className="text-sm text-gray-500">
+              @{user?.username || "username"}
+            </p>
+          </div>
         </div>
+
+        <button
+          onClick={() => navigate(`/profile/${user._id}`)}
+          className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800"
+        >
+          View Profile
+        </button>
+      </div>
+    ))}
+</div>
       </div>
     </div>
   );

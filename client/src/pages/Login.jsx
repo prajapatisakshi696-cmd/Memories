@@ -34,8 +34,6 @@ const LogIn = () => {
         // Save user info locally if needed
           login(data.user, data.token); 
 
-       localStorage.setItem("currentUser", JSON.stringify(data.user));
-        localStorage.setItem("token", data.id);
         navigate('/feed', { replace: true });
       } else {
         setError(data.message || "Registration failed");
