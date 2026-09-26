@@ -89,18 +89,18 @@ const MessageInput = ({ onSend, onTyping, onStopTyping }) => {
           className="flex-1 bg-transparent outline-none text-[15px] py-1.5 min-w-0"
         />
 
-        <button
+                <button
           type="button"
           onClick={handleSend}
           disabled={!text.trim()}
-          className={`p-2 rounded-full shrink-0 transition-colors ${
+          className={`p-2.5 rounded-full shrink-0 transition-all ${
             text.trim()
-              ? "text-blue-500 hover:text-blue-600"
-              : "text-gray-300 cursor-not-allowed"
+              ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:shadow-md"
+              : "bg-gray-200 text-gray-400 cursor-not-allowed"
           }`}
           aria-label="Send message"
         >
-          <Send size={20} />
+          <Send size={18} />
         </button>
       </div>
     </div>

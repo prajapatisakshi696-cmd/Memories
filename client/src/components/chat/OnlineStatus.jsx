@@ -1,5 +1,5 @@
 const OnlineStatus = ({ isOnline, size = "sm" }) => {
-  const sizeClasses = size === "sm" ? "w-2.5 h-2.5" : "w-3 h-3";
+  const sizeClasses = size === "sm" ? "w-3 h-3" : "w-3.5 h-3.5";
 
   if (!isOnline) return null;
 

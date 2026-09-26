@@ -11,7 +11,7 @@ const MessageBubble = ({ message, isOwn, showMeta }) => {
       <div
         className={`max-w-[78%] md:max-w-[60%] px-4 py-2.5 rounded-3xl break-words text-[15px] leading-snug ${
           isOwn
-            ? "bg-blue-500 text-white rounded-br-md"
+            ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-br-md"
             : "bg-gray-100 text-gray-900 rounded-bl-md"
         }`}
       >
@@ -25,8 +25,11 @@ const MessageBubble = ({ message, isOwn, showMeta }) => {
           }`}
         >
           <span>{time}</span>
-          {isOwn && message.seen && (
-            <CheckCheck size={12} className="text-blue-400" />
+          {isOwn && (
+            <CheckCheck
+              size={12}
+              className={message.seen ? "text-indigo-400" : "text-gray-300"}
+            />
           )}
         </div>
       )}

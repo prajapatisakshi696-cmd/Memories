@@ -150,8 +150,8 @@ const ChatWindow = ({ currentUser, conversation, onBack, onConversationUpdate, o
   });
 
   return (
-    <div className="flex flex-col h-full bg-white">
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100 shrink-0">
+    <div className="flex flex-col h-full w-full bg-white">
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100 shrink-0 bg-white">
         <button
           onClick={onBack}
           className="md:hidden p-1 -ml-1 text-gray-600"
@@ -168,20 +168,23 @@ const ChatWindow = ({ currentUser, conversation, onBack, onConversationUpdate, o
                 : "/avatar.png"
             }
             alt={otherUser.username}
-            className="w-10 h-10 rounded-full object-cover"
+            className="w-10 h-10 rounded-full object-cover ring-2 ring-indigo-100"
           />
           <OnlineStatus isOnline={isUserOnline(otherUser._id)} />
         </div>
 
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <h2 className="font-semibold text-[15px] truncate">
             {otherUser.full_name || otherUser.username}
           </h2>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs">
             {isUserOnline(otherUser._id) ? (
-              <span className="text-green-500">Active now</span>
+              <span className="text-green-500 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                Online
+              </span>
             ) : (
-              "Offline"
+              <span className="text-gray-400">Offline</span>
             )}
           </p>
         </div>
