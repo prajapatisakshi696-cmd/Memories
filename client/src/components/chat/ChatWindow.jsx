@@ -7,6 +7,7 @@ import MessageBubble from "./MessageBubble";
 import TypingIndicator from "./TypingIndicator";
 import MessageInput from "./MessageInput";
 import OnlineStatus from "./OnlineStatus";
+import UserAvatar from "../UserAvatar";
 
 const ChatWindow = ({ currentUser, conversation, onBack, onConversationUpdate, onConversationCreated }) => {
   const { socket, isUserOnline } = useSocket();
@@ -161,15 +162,7 @@ const ChatWindow = ({ currentUser, conversation, onBack, onConversationUpdate, o
         </button>
 
         <div className="relative shrink-0">
-          <img
-            src={
-              otherUser.profile_picture
-                ? getImageUrl(otherUser.profile_picture)
-                : "/avatar.png"
-            }
-            alt={otherUser.username}
-            className="w-10 h-10 rounded-full object-cover ring-2 ring-indigo-100"
-          />
+<UserAvatar user={otherUser} size={40} className="ring-2 ring-indigo-100" />
           <OnlineStatus isOnline={isUserOnline(otherUser._id)} />
         </div>
 

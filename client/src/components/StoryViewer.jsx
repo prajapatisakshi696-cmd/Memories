@@ -1,49 +1,51 @@
-import { BadgeCheck, X } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import { BadgeCheck, X } from "lucide-react";
+import { getImageUrl } from "../helper";
+import React, { useEffect, useState } from "react";
+import UserAvatar from "./UserAvatar";
 
 const StoryViewer = ({ viewStory, setViewStory }) => {
-  const [progress, setProgress] = useState(0)
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    let progressInterval
+    let progressInterval;
 
-    if (viewStory && viewStory.media_type !== 'video') {
-      setProgress(0)
+    if (viewStory && viewStory.media_type !== "video") {
+      setProgress(0);
 
-      const duration = 5000 // 5 seconds
-      const step = 100      // update every 100ms
-      let elapsed = 0
+      const duration = 5000; // 5 seconds
+      const step = 100; // update every 100ms
+      let elapsed = 0;
 
       progressInterval = setInterval(() => {
-        elapsed += step
-        const percent = (elapsed / duration) * 100
-        setProgress(percent)
+        elapsed += step;
+        const percent = (elapsed / duration) * 100;
+        setProgress(percent);
 
         if (percent >= 100) {
-          clearInterval(progressInterval)
-          setViewStory(null) // auto close when finished
+          clearInterval(progressInterval);
+          setViewStory(null); // auto close when finished
         }
-      }, step)
+      }, step);
     }
 
-    return () => clearInterval(progressInterval)
-  }, [viewStory, setViewStory])
+    return () => clearInterval(progressInterval);
+  }, [viewStory, setViewStory]);
 
   const handleClose = () => {
-    setViewStory(null)
-  }
+    setViewStory(null);
+  };
 
   const renderContent = () => {
     switch (viewStory?.media_type) {
-      case 'image':
+      case "image":
         return (
           <img
             src={viewStory.media_url}
             alt=""
             className="max-w-full max-h-screen object-contain"
           />
-        )
-      case 'video':
+        );
+      case "video":
         return (
           <video
             src={viewStory.media_url}
@@ -52,28 +54,28 @@ const StoryViewer = ({ viewStory, setViewStory }) => {
             autoPlay
             onEnded={handleClose}
           />
-        )
-      case 'text':
+        );
+      case "text":
         return (
           <div className="w-full h-full flex items-center justify-center p-8 text-white text-2xl text-center">
             {viewStory.content}
           </div>
-        )
+        );
       default:
-        return null
+        return null;
     }
-  }
+  };
 
-  if (!viewStory) return null
+  if (!viewStory) return null;
 
   return (
     <div
       className="fixed inset-0 h-screen bg-black bg-opacity-90 z-110 flex items-center justify-center"
       style={{
         backgroundColor:
-          viewStory.media_type === 'text'
-            ? viewStory.background
-            : '#000000',
+          viewStory.media_type === "text"
+            ? viewStory.background_color
+            : "#000000",
       }}
     >
       {/* Progress bar */}
@@ -86,14 +88,22 @@ const StoryViewer = ({ viewStory, setViewStory }) => {
 
       {/* User info top left */}
       <div className="absolute top-4 left-4 flex items-center gap-2">
+<UserAvatar user={viewStory.user} size={40} />      </div>
+
+      {/* User info top left */}
+      <div className="absolute top-4 left-4 flex items-center gap-2">
         <img
-          src={viewStory.user?.profile_picture}
+          src={
+            viewStory.user?.profile_picture
+              ? getImageUrl(viewStory.user.profile_picture)
+              : "/avatar.png"
+          }
           alt=""
-          className="w-10 h-10 rounded-full"
+          className="w-10 h-10 rounded-full object-cover"
         />
         <div className="flex items-center gap-1 text-white">
-          <span>{viewStory.user?.full_name}</span>
-          <BadgeCheck size={18} />
+<span>{viewStory.user?.full_name || viewStory.user?.username}</span>       
+   <BadgeCheck size={18} />
         </div>
       </div>
 
@@ -108,7 +118,7 @@ const StoryViewer = ({ viewStory, setViewStory }) => {
       {/* Story content */}
       {renderContent()}
     </div>
-  )
-}
+  );
+};
 
-export default StoryViewer
+export default StoryViewer;

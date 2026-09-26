@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useSocket } from "../../context/SocketContext";
 import { API_BASE, getImageUrl } from "../../helper";
 import ConversationItem from "./ConversationItem";
+import UserAvatar from "../UserAvatar";
 
 const ChatSidebar = ({
   conversations,
@@ -82,11 +83,7 @@ const ChatSidebar = ({
                     className="flex flex-col items-center gap-1 shrink-0 w-16"
                   >
                     <div className="relative">
-                      <img
-                        src={user.profile_picture ? getImageUrl(user.profile_picture) : "/avatar.png"}
-                        alt={user.username}
-                        className="w-14 h-14 rounded-full object-cover"
-                      />
+                      <UserAvatar user={user} size={56} />
                       {isUserOnline(user._id) && (
                         <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full" />
                       )}
@@ -106,11 +103,7 @@ const ChatSidebar = ({
                   className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-left"
                 >
                   <div className="relative shrink-0">
-                    <img
-                      src={user.profile_picture ? getImageUrl(user.profile_picture) : "/avatar.png"}
-                      alt={user.username}
-                      className="w-12 h-12 rounded-full object-cover"
-                    />
+                    <UserAvatar user={user} size={56} />
                     {isUserOnline(user._id) && (
                       <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full" />
                     )}

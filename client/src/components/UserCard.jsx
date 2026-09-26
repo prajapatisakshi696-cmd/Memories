@@ -17,8 +17,8 @@ const UserCard = ({user}) => {
   return (
     <div key={user._id} className=''>
     <div className=''>
-        <img src={user.profile_picture} alt="" className=''/>
-        <p className=''>{user.full_name}</p>
+<UserAvatar user={user} size={48} />       
+ <p className=''>{user.full_name}</p>
         {user.username && <p>@{user.username}</p>}
     </div>
     </div>

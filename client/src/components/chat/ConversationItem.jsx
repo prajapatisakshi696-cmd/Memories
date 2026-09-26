@@ -1,6 +1,7 @@
 import { formatDistanceToNowStrict } from "date-fns";
 import { getImageUrl } from "../../helper";
 import OnlineStatus from "./OnlineStatus";
+import UserAvatar from "../UserAvatar";
 
 const ConversationItem = ({ conversation, isActive, isOnline, currentUserId, onClick }) => {
   const { user, lastMessage, lastMessageTime, lastMessageSender, unreadCount } = conversation;
@@ -20,11 +21,7 @@ const ConversationItem = ({ conversation, isActive, isOnline, currentUserId, onC
       }`}
     >
       <div className="relative shrink-0">
-        <img
-          src={user.profile_picture ? getImageUrl(user.profile_picture) : "/avatar.png"}
-          alt={user.username}
-          className="w-14 h-14 rounded-full object-cover ring-2 ring-white"
-        />
+        <UserAvatar user={user} size={56} />
         <OnlineStatus isOnline={isOnline} />
       </div>
 

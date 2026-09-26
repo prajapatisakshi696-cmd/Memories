@@ -12,6 +12,7 @@ import http from "http";
 import { Server } from "socket.io";
 import chatRoutes from "./routes/chat.js";
 import { initChatSocket } from "./socket/chatSocket.js";
+import storyRoutes from "./routes/story.js";
 
 
 dotenv.config();
@@ -63,6 +64,7 @@ app.use("/api/users", usersRoutes);
 app.use("/api/follow", followRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/stories", storyRoutes);
 // Test route
 app.get("/", (req, res) => {
   res.send("API is running...");
