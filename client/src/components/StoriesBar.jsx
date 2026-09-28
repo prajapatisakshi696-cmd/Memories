@@ -40,13 +40,13 @@ const StoriesBar = () => {
         story.user?.full_name || story.user?.username || story.user?.name || 'User'
  
   return (
-    <div className='w-full min-w-0 bg-white rounded-2xl border border-slate-100 shadow-sm p-3'>
+    <div className='w-full min-w-0 h-42 bg-white rounded-2xl border border-slate-100 shadow-sm p-3'>
  
      <div className='flex gap-3 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-1'>
         {/* add stories card */}
         <div
             onClick={() => setShowModal(true)}
-            className='group snap-start shrink-0 w-28 h-40 rounded-2xl cursor-pointer border border-indigo-100
+            className='group snap-start shrink-0 w-28 h-36 rounded-2xl cursor-pointer border border-indigo-100
             bg-gradient-to-b from-indigo-50 to-purple-100/70 shadow-sm hover:shadow-md hover:-translate-y-0.5
             active:scale-95 transition-all duration-200 flex flex-col items-center justify-center gap-3 p-3'
         >
@@ -63,7 +63,7 @@ const StoriesBar = () => {
                 <div
                     key={story._id}
                     onClick={() => setViewStory(story)}
-                    className='group relative snap-start shrink-0 w-28 h-40 rounded-2xl overflow-hidden cursor-pointer
+                    className='group relative snap-start shrink-0 w-28 h-36 rounded-2xl overflow-hidden cursor-pointer
                     shadow-sm hover:shadow-lg hover:-translate-y-0.5 active:scale-95 transition-all duration-200
                     bg-gradient-to-b from-indigo-500 to-purple-600'
                     style={story.media_type === 'text' ? { backgroundColor: story.background_color } : undefined}

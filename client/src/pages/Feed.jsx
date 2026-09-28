@@ -66,7 +66,7 @@ const Feed = ({ user }) => {
   return (
     <div className="h-full overflow-y-scroll no-scrollbar bg-gradient-to-b from-slate-50 to-indigo-50/40 py-6 px-3 sm:px-6 flex items-start justify-center gap-6 lg:gap-8">
       {/* Center column */}
-      <div className="w-full max-w-[640px] min-w-0">
+      <div className="w-full max-w-[800px] min-w-0 ">
         {/* Composer */}
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow p-3 flex items-center gap-3">
           <Avatar src={userPic} name={userName} />
