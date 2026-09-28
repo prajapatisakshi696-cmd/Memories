@@ -54,7 +54,7 @@ router.get("/discover/:id", async (req, res) => {
   try {
     const users = await User.find({
       _id: { $ne: req.params.id },
-    });
+}).select("-password");
 
     res.json(users);
   } catch (err) {
@@ -72,7 +72,7 @@ router.get("/search", async (req, res) => {
         { username: { $regex: query, $options: "i" } },
         { full_name: { $regex: query, $options: "i" } },
       ],
-    });
+    }).select("-password");
 
     res.json(users);
   } catch (err) {
