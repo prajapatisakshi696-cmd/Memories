@@ -3,6 +3,7 @@ import { Users, UserCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../AuthContext";
 import { getImageUrl, API_BASE } from "../helper";
+import UserAvatar from "../components/UserAvatar";
 
 
 const Connections = () => {
@@ -120,27 +121,18 @@ const Connections = () => {
         className="flex items-center justify-between bg-white p-4 rounded-lg shadow hover:shadow-md transition"
       >
         <div className="flex items-center gap-3">
-          <img
-            src={
-              user?.profile_picture
-                ? getImageUrl(user.profile_picture)
-                : "https://ui-avatars.com/api/?name=User"
-            }
-            alt={user?.username}
-            className="w-12 h-12 rounded-full object-cover"
-          />
+  <UserAvatar user={user} size={48} />
 
-          <div>
-            <p className="font-semibold">
-              {user?.full_name || "User"}
-            </p>
+  <div>
+    <p className="font-semibold">
+      {user?.full_name || user?.username || "Unknown User"}
+    </p>
 
-            <p className="text-sm text-gray-500">
-              @{user?.username || "username"}
-            </p>
-          </div>
-        </div>
-
+    <p className="text-sm text-gray-500">
+      @{user?.username || "username"}
+    </p>
+  </div>
+</div>
         <button
           onClick={() => navigate(`/profile/${user._id}`)}
           className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800"
